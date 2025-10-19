@@ -1,9 +1,8 @@
+import { authManager } from '@/appwrite/authManager';
 import { ThemedView } from '@/components/themed-view';
-import { account } from '@/lib/appwrite';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
-import { ID } from 'react-native-appwrite';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SignUpScreen() {
@@ -18,16 +17,15 @@ export default function SignUpScreen() {
   const signUpWithEmail = async () => {
     try {
       setIsLoading(true);
-      await account.create({ 
-        userId: ID.unique(), 
-        email, 
-        password,
-        name: `${firstName} ${lastName}`.trim()
-      });
-      await account.createEmailPasswordSession({ email, password });
-      router.replace('./(tabs)');
+      const result = await authManager.signUpWithEmail(email, password, firstName, lastName);
+      
+      if (result.success) {
+        router.replace('./(tabs)');
+      } else {
+        Alert.alert('Sign Up Error', result.error);
+      }
     } catch (error) {
-      Alert.alert('Sign Up Error', error.message);
+      Alert.alert('Sign Up Error', 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }

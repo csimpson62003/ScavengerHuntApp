@@ -1,33 +1,28 @@
-import { ThemedText } from '@/components/themed-text';
+import { huntManager } from '@/appwrite/huntManager';
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'expo-router';
-import { Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 export default function ScavengerHuntScreen() {
   const router = useRouter();
   const { user, logout } = useAuth();
+  const [hunts, setHunts] = useState([]); // Placeholder for hunts data
 
-  const handleLogout = async () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            await logout();
-            router.replace('/auth');
-          },
-        },
-      ]
-    );
-  };
+
+  useEffect(() => {   
+    const getHuntData = async () => {
+      const fetchedHunts = await huntManager.getHunts().then(res => {
+        if (res.hunts) {
+          setHunts(res.hunts);
+        } else {
+          console.error('Error fetching hunts:', res.error);
+        }
+      });
+    };
+    getHuntData();
+  }, []);
 
   return (
     <ThemedView style={styles.container}>
@@ -38,23 +33,16 @@ export default function ScavengerHuntScreen() {
           Welcome, {user.name}!
         </Text>
       )}
-
-      <ThemedView style={styles.content}>
-        <Text style={styles.placeholderText}>
-          🏴‍☠️ Scavenger Hunt Game Coming Soon!
-        </Text>
-        
-        <Text style={styles.description}>
-          This is where your scavenger hunt game will be implemented.
-        </Text>
-      </ThemedView>
-
-      <TouchableOpacity 
-        style={styles.logoutButton}
-        onPress={handleLogout}
-      >
-        <ThemedText style={styles.logoutText}>Logout</ThemedText>
-      </TouchableOpacity>
+      <Text style={styles.subtitle}>🔍 My Hunts</Text>
+      <FlatList 
+        data={[]}
+        keyExtractor={(item) => item['$id']}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item.title}</Text>
+          </View>
+        )}
+      />
     </ThemedView>
   );
 }

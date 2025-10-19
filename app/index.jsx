@@ -1,9 +1,8 @@
-import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -39,12 +38,12 @@ export default function SplashScreen() {
     <ThemedView style={styles.container}>
       <View style={styles.logoContainer}>
         {/* Replace with your app logo */}
-        <ThemedText style={styles.logo}>🕵️</ThemedText>
-        <ThemedText style={styles.title}>Scavenger Hunt</ThemedText>
+        <Text style={styles.logo}>🕵️</Text>
+        <Text style={styles.title}>Scavenger Hunt</Text>
       </View>
       
       <View style={styles.loadingContainer}>
-        <ThemedText style={styles.loadingText}>Loading...</ThemedText>
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     </ThemedView>
   );

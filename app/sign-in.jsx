@@ -1,5 +1,5 @@
+import { authManager } from '@/appwrite/authManager';
 import { ThemedView } from '@/components/themed-view';
-import { account } from '@/lib/appwrite';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
@@ -14,10 +14,15 @@ export default function SignInScreen() {
   const signInWithEmail = async () => {
     try {
       setIsLoading(true);
-      await account.createEmailPasswordSession({ email, password });
-      router.replace('/(tabs)');
+      const result = await authManager.signInWithEmail(email, password);
+      
+      if (result.success) {
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert('Sign In Error', result.error);
+      }
     } catch (error) {
-      Alert.alert('Sign In Error', error.message);
+      Alert.alert('Sign In Error', 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
